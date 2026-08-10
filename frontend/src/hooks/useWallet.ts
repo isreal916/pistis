@@ -15,9 +15,17 @@ export function useWallet() {
 
   const isWrongNetwork = isConnected && chainId !== coston2.id;
 
+  /** Connects with the browser's injected wallet (MetaMask extension, or a
+   * wallet app's built-in browser) — does nothing useful on a plain mobile
+   * browser with no injected provider. Prefer the connector picker there. */
   function connectWallet() {
     const injectedConnector = connectors.find((c) => c.id === "injected");
     connect({ connector: injectedConnector ?? connectors[0] });
+  }
+
+  function connectWith(connectorId: string) {
+    const connector = connectors.find((c) => c.id === connectorId);
+    if (connector) connect({ connector });
   }
 
   function switchToCoston2() {
@@ -30,7 +38,9 @@ export function useWallet() {
     isConnecting,
     isSwitching,
     isWrongNetwork,
+    connectors,
     connectWallet,
+    connectWith,
     disconnect,
     switchToCoston2,
   };

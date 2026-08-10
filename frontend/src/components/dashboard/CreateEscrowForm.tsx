@@ -9,6 +9,7 @@ import { useWallet, truncateAddress } from "@/hooks/useWallet";
 import { useFxrpBalance } from "@/hooks/useFxrpBalance";
 import { pistisFactoryAbi, PISTIS_FACTORY_COSTON2 } from "@/lib/pistis";
 import { SuccessConfetti } from "@/components/dashboard/SuccessConfetti";
+import { ConnectWalletModal } from "@/components/landing/ConnectWalletModal";
 
 type Milestone = {
   title: string;
@@ -28,13 +29,13 @@ export function CreateEscrowForm() {
     isConnecting,
     isWrongNetwork,
     isSwitching,
-    connectWallet,
     switchToCoston2,
   } = useWallet();
   const { decimals } = useFxrpBalance();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
 
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [freelancerWallet, setFreelancerWallet] = useState("");
@@ -177,7 +178,7 @@ export function CreateEscrowForm() {
         </p>
         <button
           type="button"
-          onClick={!isConnected ? connectWallet : switchToCoston2}
+          onClick={!isConnected ? () => setConnectModalOpen(true) : switchToCoston2}
           disabled={isConnecting || isSwitching}
           className="rounded-[39px] bg-gradient-to-b from-[#ff846d] to-[#fc310c] px-6 py-2.5 text-[14px] font-semibold tracking-[0.2px] text-white disabled:opacity-60"
         >
@@ -189,6 +190,10 @@ export function CreateEscrowForm() {
               ? "Switching..."
               : "Switch to Coston2"}
         </button>
+        <ConnectWalletModal
+          open={connectModalOpen}
+          onClose={() => setConnectModalOpen(false)}
+        />
       </div>
     );
   }

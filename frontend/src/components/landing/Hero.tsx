@@ -6,18 +6,14 @@ import Image from "next/image";
 import { FloatingCoins } from "./FloatingCoins";
 import { HeroTexture } from "./HeroTexture";
 import { useWallet } from "@/hooks/useWallet";
+import { ConnectWalletModal } from "@/components/landing/ConnectWalletModal";
 
 export function Hero() {
   const router = useRouter();
-  const {
-    isConnected,
-    isConnecting,
-    isWrongNetwork,
-    isSwitching,
-    connectWallet,
-    switchToCoston2,
-  } = useWallet();
+  const { isConnected, isConnecting, isWrongNetwork, isSwitching, switchToCoston2 } =
+    useWallet();
   const [wantsToCreate, setWantsToCreate] = useState(false);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
 
   useEffect(() => {
     if (wantsToCreate && isConnected && !isWrongNetwork) {
@@ -28,7 +24,7 @@ export function Hero() {
   function handleCreateEscrow() {
     setWantsToCreate(true);
     if (!isConnected) {
-      connectWallet();
+      setConnectModalOpen(true);
     } else if (isWrongNetwork) {
       switchToCoston2();
     } else {
@@ -99,6 +95,11 @@ export function Hero() {
       <div className="relative mx-auto h-[280px] max-w-[1200px] md:h-[420px]">
         <FloatingCoins />
       </div>
+
+      <ConnectWalletModal
+        open={connectModalOpen}
+        onClose={() => setConnectModalOpen(false)}
+      />
     </section>
   );
 }
