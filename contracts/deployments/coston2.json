@@ -1,0 +1,27 @@
+{
+  "coston2": {
+    "chainId": 114,
+    "PistisFactory": {
+      "address": "0xfFDC9CD4554d36C720ea5cB1A36C70Bf65923F1D",
+      "deployBlock": 33864400,
+      "oftAdapter": "0xCd3d2127935Ae82Af54Fc31cCD9D3440dbF46639",
+      "swapRouter": "0x0000000000000000000000000000000000000000",
+      "swapToken": "0x0000000000000000000000000000000000000000",
+      "note": "Deployed 2026-08-10. Adds an on-chain deadline field (createEscrow gained a deadline param). Swap-on-release still disabled on this network."
+    },
+    "_deprecated": [
+      {
+        "note": "Pre-milestone-rewrite single-escrow deployment, incompatible ABI.",
+        "address": "0xe15a0b7ba3d8c8586de96c5cc0dd9195d5af38fc"
+      },
+      {
+        "note": "Milestone-based factory, superseded when swap-on-release was added.",
+        "address": "0xA0187f1Dd087E367119dd0e2BB75fC7678f0a1A9"
+      },
+      {
+        "note": "Swap-on-release factory, superseded when deadline field was added (createEscrow signature changed).",
+        "address": "0x90f147DE8c07426Dc8CDE927631e221fD355e392"
+      }
+    ]
+  }
+}

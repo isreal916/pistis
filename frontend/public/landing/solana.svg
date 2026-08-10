@@ -1,0 +1,24 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="42" height="32" viewBox="0 0 42 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="solana_symbol.svg" clip-path="url(#clip0_0_13)">
+<path id="Vector" d="M6.82045 24.4018C7.07725 24.1524 7.42541 24.0123 7.78843 24.0123H41.2826C41.8928 24.0123 42.1982 24.7294 41.7666 25.1486L35.1482 31.576C34.8914 31.8254 34.5433 31.9654 34.1803 31.9654H0.686051C0.0758912 31.9654 -0.229553 31.2484 0.202066 30.8292L6.82045 24.4018Z" fill="url(#paint0_linear_0_13)"/>
+<path id="Vector_2" d="M6.82029 0.389467C7.07709 0.140085 7.42525 0 7.78827 0H41.2825C41.8926 0 42.198 0.717102 41.7664 1.13627L35.148 7.56367C34.8913 7.81305 34.5432 7.95314 34.1801 7.95314H0.685892C0.0757323 7.95314 -0.229712 7.23603 0.201908 6.81687L6.82029 0.389467Z" fill="url(#paint1_linear_0_13)"/>
+<path id="Vector_3" d="M35.1482 12.3192C34.8914 12.0697 34.5433 11.9297 34.1803 11.9297H0.686051C0.0758911 11.9297 -0.229553 12.6468 0.202066 13.0659L6.82045 19.4933C7.07724 19.7428 7.42541 19.8829 7.78843 19.8829H41.2826C41.8928 19.8829 42.1982 19.1657 41.7666 18.7466L35.1482 12.3192Z" fill="url(#paint2_linear_0_13)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_13" x1="28.3733" y1="-8.76831" x2="6.21333" y2="34.9034" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00FFA3"/>
+<stop offset="1" stop-color="#DC1FFF"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_13" x1="28.3732" y1="-8.76831" x2="6.21317" y2="34.9034" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00FFA3"/>
+<stop offset="1" stop-color="#DC1FFF"/>
+</linearGradient>
+<linearGradient id="paint2_linear_0_13" x1="28.3733" y1="-8.76831" x2="6.21333" y2="34.9034" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00FFA3"/>
+<stop offset="1" stop-color="#DC1FFF"/>
+</linearGradient>
+<clipPath id="clip0_0_13">
+<rect width="42" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>

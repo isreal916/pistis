@@ -1,0 +1,7 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Local Claude Code session config (machine-specific, not project config)
+.claude/settings.local.json
