@@ -116,16 +116,45 @@ export async function fetchEscrow(
  * immediately as the chain progresses. 25 leaves a safety margin. */
 const LOG_CHUNK_SIZE = BigInt(25);
 
-/** Total blocks to look back for activity, in chunks. Bounded on purpose —
- * a full history back to the factory's deploy block would mean hundreds of
- * chunked requests per page load. This favors showing recent real activity
- * fast over showing everything slowly. */
-const MAX_LOOKBACK_BLOCKS = BigInt(500);
+/** Safety valve on total chunked requests a single activity fetch will make,
+ * in case a deployment block search ever returns something unexpectedly far
+ * back. ~400 chunks covers roughly 10,400 blocks (~5+ hours on Coston2) —
+ * comfortably more than any escrow will realistically need, while still
+ * bounding the worst case instead of scanning forever. */
+const MAX_CHUNKS = 400;
+
+/** Finds the exact block a contract was deployed at via binary search on
+ * `eth_getCode` (empty before deployment, non-empty after) — no block-range
+ * cap applies to single-block reads, so this is cheap (~log2(range) calls)
+ * regardless of how old the contract is. This replaces guessing a fixed
+ * lookback window, which was silently missing real activity older than the
+ * window and showing "No on-chain activity yet" even when there was some. */
+async function findDeploymentBlock(
+  publicClient: PublicClient,
+  address: Address,
+  lowerBound: bigint,
+  upperBound: bigint
+): Promise<bigint> {
+  let lo = lowerBound;
+  let hi = upperBound;
+  while (lo < hi) {
+    const mid = (lo + hi) / BigInt(2);
+    const code = await publicClient.getCode({ address, blockNumber: mid });
+    if (code && code !== "0x") {
+      hi = mid;
+    } else {
+      lo = mid + BigInt(1);
+    }
+  }
+  return hi;
+}
 
 /** Reconstructs an activity feed from the escrow's own event log — real
- * on-chain history, not fabricated copy. Chunks the query to stay under the
- * RPC's block-range limit; only looks back MAX_LOOKBACK_BLOCKS instead of to
- * `fromBlock` if that range would need too many chunked requests. */
+ * on-chain history, not fabricated copy. Scans from the escrow's actual
+ * deployment block (found via findDeploymentBlock) rather than an arbitrary
+ * lookback window, so activity from earlier in the escrow's life doesn't
+ * silently disappear. Chunks the query to stay under the RPC's block-range
+ * limit, bounded by MAX_CHUNKS as a worst-case safety valve. */
 export async function fetchActivity(
   publicClient: PublicClient,
   address: Address,
@@ -133,8 +162,9 @@ export async function fetchActivity(
   decimals: number
 ): Promise<ActivityEntry[]> {
   const latestBlock = await publicClient.getBlockNumber();
-  const startBlock =
-    fromBlock > latestBlock - MAX_LOOKBACK_BLOCKS ? fromBlock : latestBlock - MAX_LOOKBACK_BLOCKS;
+  const deployBlock = await findDeploymentBlock(publicClient, address, fromBlock, latestBlock);
+  const minStartBlock = latestBlock - BigInt(MAX_CHUNKS) * (LOG_CHUNK_SIZE + BigInt(1));
+  const startBlock = deployBlock > minStartBlock ? deployBlock : minStartBlock;
 
   const chunkStarts: bigint[] = [];
   for (let b = startBlock; b <= latestBlock; b += LOG_CHUNK_SIZE + BigInt(1)) {
