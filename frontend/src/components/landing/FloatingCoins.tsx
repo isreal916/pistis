@@ -113,7 +113,7 @@ export function FloatingCoins() {
           alt=""
           fill
           sizes="700px"
-          className="object-contain object-left"
+          className="object-fill"
         />
       </div>
       <div className="absolute inset-[36.7%_0%_23.9%_50%] opacity-90">
@@ -122,7 +122,7 @@ export function FloatingCoins() {
           alt=""
           fill
           sizes="700px"
-          className="scale-x-[-1] object-contain object-left"
+          className="scale-x-[-1] object-fill"
         />
       </div>
       <div className="absolute left-1/2 top-[64%] h-[3%] w-[43%] -translate-x-1/2 opacity-90">
