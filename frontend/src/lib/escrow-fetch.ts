@@ -178,6 +178,10 @@ export async function fetchActivity(
         return {
           text: `Milestone ${log.args.index} approved — ${fxrp(log.args.amount)} bridged to ${truncateAddress(log.args.to)}`,
           time,
+          // Coston2's log only proves the send — this is where to actually
+          // check whether LayerZero delivered it on the destination chain.
+          link: `https://testnet.layerzeroscan.com/tx/${log.transactionHash}`,
+          linkLabel: "Track delivery on LayerZero Scan",
         };
       case "Cancelled":
         return { text: `Escrow cancelled — ${fxrp(log.args.refunded)} refunded`, time };

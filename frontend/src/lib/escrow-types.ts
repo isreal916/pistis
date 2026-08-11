@@ -13,6 +13,11 @@ export type Milestone = {
 export type ActivityEntry = {
   text: string;
   time: string;
+  /** External link for verifying this event beyond Pistis's own state — e.g.
+   * a LayerZero Scan URL to confirm a bridge actually landed on the
+   * destination chain, not just that Coston2 sent it. */
+  link?: string;
+  linkLabel?: string;
 };
 
 export type Escrow = {

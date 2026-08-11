@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { erc20Abi, formatEther, isAddress, parseUnits, zeroAddress, type Address } from "viem";
 import { usePublicClient, useWriteContract } from "wagmi";
-import { pistisAbi, HYPERLIQUID_TESTNET_EID } from "@/lib/pistis";
+import { pistisAbi, BRIDGE_DESTINATIONS } from "@/lib/pistis";
 import { buildLzReceiveOptions, DEFAULT_LZ_RECEIVE_GAS } from "@/lib/layerzero-options";
 import { SuccessConfetti } from "@/components/dashboard/SuccessConfetti";
 
@@ -24,6 +24,16 @@ type Step = "review" | "approving" | "approved" | "revision" | "revision-sent" |
 type ReleaseMode = "local" | "bridge" | "swap";
 
 const EXTRA_OPTIONS = buildLzReceiveOptions(DEFAULT_LZ_RECEIVE_GAS);
+
+// Plain initials on each chain's real brand color — not a logo mark, just an
+// honest, quick way to tell destinations apart without misrepresenting a
+// chain's actual icon (we don't have licensed/accurate logo assets on hand).
+const DESTINATION_BADGE: Record<number, { label: string; bg: string; fg: string }> = {
+  40362: { label: "HL", bg: "#97fce4", fg: "#0a2e27" }, // Hyperliquid Testnet
+  40161: { label: "ETH", bg: "#627eea", fg: "#ffffff" }, // Ethereum Sepolia
+  40102: { label: "BSC", bg: "#f0b90b", fg: "#1a1a1a" }, // BSC Testnet
+  40245: { label: "BASE", bg: "#0052ff", fg: "#ffffff" }, // Base Sepolia
+};
 
 export function ReviewProjectModal({
   open,
@@ -47,17 +57,20 @@ export function ReviewProjectModal({
   // `key` on the milestone being reviewed) whenever that should reset,
   // rather than syncing it here with an effect.
   const [recipient, setRecipient] = useState<string>(freelancerWallet);
+  const [dstEid, setDstEid] = useState<number>(BRIDGE_DESTINATIONS[0].eid);
+  const destination = BRIDGE_DESTINATIONS.find((d) => d.eid === dstEid) ?? BRIDGE_DESTINATIONS[0];
+  const [bridgeTxHash, setBridgeTxHash] = useState<string | null>(null);
 
   const canQuote = open && releaseMode === "bridge" && Boolean(publicClient) && isAddress(recipient);
 
   const { data: quotedFee, isFetching: quoting } = useQuery({
-    queryKey: ["bridgeFee", escrowAddress, milestoneIndex, recipient],
+    queryKey: ["bridgeFee", escrowAddress, milestoneIndex, recipient, dstEid],
     queryFn: async () => {
       const [nativeFee] = await publicClient!.readContract({
         address: escrowAddress,
         abi: pistisAbi,
         functionName: "quoteBridgeFee",
-        args: [BigInt(milestoneIndex), HYPERLIQUID_TESTNET_EID, recipient as Address, EXTRA_OPTIONS],
+        args: [BigInt(milestoneIndex), dstEid, recipient as Address, EXTRA_OPTIONS],
       });
       return nativeFee;
     },
@@ -95,6 +108,8 @@ export function ReviewProjectModal({
     setRevisionNotes("");
     setError("");
     setReleaseMode("local");
+    setDstEid(BRIDGE_DESTINATIONS[0].eid);
+    setBridgeTxHash(null);
     onClose();
   }
 
@@ -146,10 +161,11 @@ export function ReviewProjectModal({
         address: escrowAddress,
         abi: pistisAbi,
         functionName: "approveMilestoneAndBridge",
-        args: [BigInt(milestoneIndex), HYPERLIQUID_TESTNET_EID, recipient, EXTRA_OPTIONS],
+        args: [BigInt(milestoneIndex), dstEid, recipient, EXTRA_OPTIONS],
         value,
       });
       await publicClient.waitForTransactionReceipt({ hash });
+      setBridgeTxHash(hash);
       setStep("approved");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Transaction failed. Try again.");
@@ -241,7 +257,7 @@ export function ReviewProjectModal({
                         : "flex-1 rounded-[10px] border border-white/10 px-4 py-2.5 text-[13px] text-white/50"
                     }
                   >
-                    Bridge to Hyperliquid
+                    Bridge Cross-chain
                   </button>
                   {swapAvailable && (
                     <button
@@ -260,9 +276,41 @@ export function ReviewProjectModal({
 
                 {releaseMode === "bridge" && (
                   <div className="mb-4 flex flex-col gap-3 rounded-[10px] border border-white/10 bg-white/5 p-4">
+                    <div className="flex flex-col gap-[8px]">
+                      <span className="text-[12px] text-white/60">
+                        Destination chain
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        {BRIDGE_DESTINATIONS.map((d) => (
+                          <button
+                            key={d.eid}
+                            type="button"
+                            onClick={() => setDstEid(d.eid)}
+                            className={
+                              dstEid === d.eid
+                                ? "flex items-center gap-2 rounded-[10px] border border-[#ff460b]/60 bg-[#ff460b]/10 px-3 py-2 text-left"
+                                : "flex items-center gap-2 rounded-[10px] border border-white/10 px-3 py-2 text-left hover:border-white/25"
+                            }
+                          >
+                            <span
+                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[8px] font-bold"
+                              style={{
+                                backgroundColor: DESTINATION_BADGE[d.eid].bg,
+                                color: DESTINATION_BADGE[d.eid].fg,
+                              }}
+                            >
+                              {DESTINATION_BADGE[d.eid].label}
+                            </span>
+                            <span className="text-[12px] text-white">
+                              {d.label}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <label className="flex flex-col gap-[8px]">
                       <span className="text-[12px] text-white/60">
-                        Recipient on Hyperliquid Testnet
+                        Recipient on {destination.label}
                       </span>
                       <input
                         value={recipient}
@@ -422,12 +470,28 @@ export function ReviewProjectModal({
             <p className="text-[16px] leading-[1.45] text-white/70">
               {amount}{" "}
               {releaseMode === "bridge"
-                ? "bridged to Hyperliquid Testnet"
+                ? `bridged to ${destination.label}`
                 : releaseMode === "swap"
                   ? `swapped to ${swapConfig?.symbol} and paid to the freelancer`
                   : "released to the freelancer"}
               .
             </p>
+            {releaseMode === "bridge" && bridgeTxHash && (
+              <div className="flex flex-col items-center gap-1 rounded-[10px] border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-[12px] text-white/50">
+                  This confirms Coston2 sent it — delivery on{" "}
+                  {destination.label} takes a few minutes via LayerZero.
+                </p>
+                <a
+                  href={`https://testnet.layerzeroscan.com/tx/${bridgeTxHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[13px] font-semibold text-[#ff460b] hover:underline"
+                >
+                  Track delivery on LayerZero Scan →
+                </a>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => {

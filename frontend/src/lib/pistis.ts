@@ -87,8 +87,19 @@ export const PISTIS_FACTORY_COSTON2 = "0xfFDC9CD4554d36C720ea5cB1A36C70Bf65923F1
  * so it's a safe lower bound for event-log queries (avoids scanning from genesis). */
 export const PISTIS_FACTORY_DEPLOY_BLOCK = BigInt(33864400);
 
-/** LayerZero V2 endpoint ID for Hyperliquid Testnet — the only destination
- * with a verified, live FXRP OFT deployment (see dev.flare.network/fxrp/oft),
- * and the default destination named in ARCHITECTURE.md. Verified live against
- * LayerZero's metadata API on 2026-08-09. */
+/** LayerZero V2 endpoint ID for Hyperliquid Testnet — the default destination
+ * named in ARCHITECTURE.md. Kept for backwards compatibility; prefer
+ * BRIDGE_DESTINATIONS for anything that should list all live peers. */
 export const HYPERLIQUID_TESTNET_EID = 40362;
+
+/** Every EVM destination the FXRP OFT adapter (OFT_ADAPTER_COSTON2) actually
+ * has a peer configured for, confirmed live on 2026-08-11 by calling
+ * `peers(uint32)` on the adapter for all LayerZero v2 testnet EIDs. Excludes
+ * Solana Testnet (EID 40168) — it's a real peer, but Solana addresses aren't
+ * EVM hex addresses, so it needs different recipient-input handling. */
+export const BRIDGE_DESTINATIONS = [
+  { label: "Hyperliquid Testnet", eid: 40362 },
+  { label: "Ethereum Sepolia", eid: 40161 },
+  { label: "BSC Testnet", eid: 40102 },
+  { label: "Base Sepolia", eid: 40245 },
+] as const;

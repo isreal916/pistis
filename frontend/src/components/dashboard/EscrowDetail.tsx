@@ -348,7 +348,19 @@ export function EscrowDetail({ address }: { address: Address }) {
                         : "flex items-center justify-between gap-6"
                     }
                   >
-                    <p className="text-[14px] text-white">{entry.text}</p>
+                    <div>
+                      <p className="text-[14px] text-white">{entry.text}</p>
+                      {entry.link && (
+                        <a
+                          href={entry.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[12px] text-[#ff460b] hover:underline"
+                        >
+                          {entry.linkLabel ?? "View"} →
+                        </a>
+                      )}
+                    </div>
                     <span className="shrink-0 text-[13px] text-white/50">
                       {entry.time}
                     </span>
