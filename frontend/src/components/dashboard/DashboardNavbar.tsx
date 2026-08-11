@@ -78,9 +78,22 @@ export function DashboardNavbar({ active = "Dashboard" }: Props) {
           onClick={() => setNavOpen((open) => !open)}
           aria-label="Toggle menu"
           aria-expanded={navOpen}
-          className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#ff846d] to-[#fc310c] text-white"
+          className={
+            navOpen
+              ? "flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#ff846d] to-[#fc310c] text-white"
+              : "flex h-[38px] w-[38px] shrink-0 items-center justify-center"
+          }
         >
-          {navOpen ? "✕" : "☰"}
+          {navOpen ? (
+            "✕"
+          ) : (
+            <Image
+              src="/landing/hamburger-icon.svg"
+              alt=""
+              width={27}
+              height={18}
+            />
+          )}
         </button>
       </div>
 

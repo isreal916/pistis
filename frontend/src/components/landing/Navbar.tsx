@@ -58,9 +58,22 @@ export function Navbar() {
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
-          className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#ff846d] to-[#fc310c] text-white"
+          className={
+            menuOpen
+              ? "flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#ff846d] to-[#fc310c] text-white"
+              : "flex h-[38px] w-[38px] shrink-0 items-center justify-center"
+          }
         >
-          {menuOpen ? "✕" : "☰"}
+          {menuOpen ? (
+            "✕"
+          ) : (
+            <Image
+              src="/landing/hamburger-icon.svg"
+              alt=""
+              width={27}
+              height={18}
+            />
+          )}
         </button>
       </div>
 
