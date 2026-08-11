@@ -1,6 +1,10 @@
 import { formatUnits, parseEventLogs, type Address, type PublicClient } from "viem";
-import { pistisAbi, PistisStatus, MilestoneStatus as OnChainMilestoneStatus } from "./pistis";
+import { pistisAbi, PistisStatus, MilestoneStatus as OnChainMilestoneStatus, BRIDGE_DESTINATIONS } from "./pistis";
 import type { ActivityEntry, Escrow, Milestone } from "./escrow-types";
+
+function destinationName(dstEid: number): string {
+  return BRIDGE_DESTINATIONS.find((d) => d.eid === dstEid)?.label ?? `EID ${dstEid}`;
+}
 
 const STATUS_LABEL: Record<number, Escrow["status"]> = {
   [PistisStatus.Created]: "Active",
@@ -176,7 +180,7 @@ export async function fetchActivity(
         };
       case "MilestoneReleasedAndBridged":
         return {
-          text: `Milestone ${log.args.index} approved — ${fxrp(log.args.amount)} bridged to ${truncateAddress(log.args.to)}`,
+          text: `Milestone ${log.args.index} approved — ${fxrp(log.args.amount)} bridged to ${truncateAddress(log.args.to)} on ${destinationName(log.args.dstEid)}`,
           time,
           // Coston2's log only proves the send — this is where to actually
           // check whether LayerZero delivered it on the destination chain.
