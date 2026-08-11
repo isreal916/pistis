@@ -109,20 +109,20 @@ export function FloatingCoins() {
     <div className="pointer-events-none absolute inset-0 z-0 hidden select-none md:block">
       <div className="absolute inset-[36.7%_50%_23.9%_0] opacity-90">
         <Image
-          src="/landing/vector2.svg"
+          src="/landing/coin-connector.svg"
           alt=""
           fill
           sizes="700px"
-          className="object-fill"
+          className="object-contain object-left"
         />
       </div>
       <div className="absolute inset-[36.7%_0%_23.9%_50%] opacity-90">
         <Image
-          src="/landing/vector2.svg"
+          src="/landing/coin-connector.svg"
           alt=""
           fill
           sizes="700px"
-          className="scale-x-[-1] object-fill"
+          className="scale-x-[-1] object-contain object-left"
         />
       </div>
       <div className="absolute left-1/2 top-[64%] h-[3%] w-[43%] -translate-x-1/2 opacity-90">
