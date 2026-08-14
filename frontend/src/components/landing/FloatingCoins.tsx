@@ -106,80 +106,108 @@ const coins: Coin[] = [
 
 export function FloatingCoins() {
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 block select-none">
-      <div className="absolute inset-[36.7%_50%_23.9%_0] opacity-90">
-        <Image
-          src="/landing/vector2.svg"
-          alt=""
-          fill
-          sizes="700px"
-          className="object-fill"
-        />
-      </div>
-      <div className="absolute inset-[36.7%_0%_23.9%_50%] opacity-90">
-        <Image
-          src="/landing/vector2-right.svg"
-          alt=""
-          fill
-          sizes="700px"
-          className="object-fill"
-        />
-      </div>
-      <div className="absolute left-1/2 top-[64%] h-[3%] w-[43%] -translate-x-1/2 opacity-90">
-        <Image
-          src="/landing/vector1.svg"
-          alt=""
-          fill
-          sizes="620px"
-          className="object-contain"
-        />
-      </div>
+ <div className="pointer-events-none absolute inset-0 z-0 block select-none overflow-hidden">
+  {/* LEFT VECTOR */}
+  <div
+    className="
+      absolute left-0 top-0
+      h-full w-[50%]
+      opacity-90
+      max-sm:h-full max-sm:w-[50%]
+    "
+  >
+    <Image
+      src="/landing/vector2.svg"
+      alt=""
+      fill
+      sizes="50vw"
+      className="object-fill"
+    />
+  </div>
 
-      {coins.map((coin) => (
+  {/* RIGHT VECTOR */}
+  <div
+    className="
+      absolute right-20 top-0
+      h-full w-[50%]
+      opacity-90
+      max-sm:right-0 top-3 max-sm:w-[50%]
+    "
+  >
+    <Image
+      src="/landing/vector2-right.svg"
+      alt=""
+      fill
+      sizes="50vw"
+      className="object-fill"
+    />
+  </div>
+
+  {/* CENTER VECTOR */}
+  <div
+    className="
+      absolute left-1/2 top-[64%]
+      h-[3%] w-[43%]
+      -translate-x-1/2
+      opacity-90
+      max-sm:top-[64%] max-sm:w-[43%]
+    "
+  >
+    <Image
+      src="/landing/vector1.svg"
+      alt=""
+      fill
+      sizes="43vw"
+      className="object-contain"
+    />
+  </div>
+
+  {/* COINS */}
+  {coins.map((coin) => (
+    <div
+      key={coin.id}
+      className={`absolute ${coin.bg ?? ""} ${coin.rounded ?? ""} ${
+        coin.shadow ?? ""
+      }`}
+      style={{
+        left: coin.left,
+        top: coin.top,
+        width: coin.width,
+        height: coin.height,
+        backgroundImage: coin.gradient
+          ? "linear-gradient(180deg, #ff846d, #fc310c)"
+          : undefined,
+      }}
+    >
+      {coin.innerBg ? (
         <div
-          key={coin.id}
-          className={`absolute ${coin.bg ?? ""} ${coin.rounded ?? ""} ${
-            coin.shadow ?? ""
-          }`}
-          style={{
-            left: coin.left,
-            top: coin.top,
-            width: coin.width,
-            height: coin.height,
-            backgroundImage: coin.gradient
-              ? "linear-gradient(180deg, #ff846d, #fc310c)"
-              : undefined,
-          }}
+          className={`absolute ${coin.innerBg} ${
+            coin.innerInset ?? "inset-[10%]"
+          } overflow-hidden rounded-[12px]`}
         >
-          {coin.innerBg ? (
-            <div
-              className={`absolute ${coin.innerBg} ${
-                coin.innerInset ?? "inset-[10%]"
-              } rounded-[12px] overflow-hidden`}
-            >
-              <div className={`absolute ${coin.iconInset ?? "inset-0"}`}>
-                <Image
-                  src={coin.icon}
-                  alt=""
-                  fill
-                  sizes="70px"
-                  className="object-contain"
-                />
-              </div>
-            </div>
-          ) : (
-            <div className={`absolute ${coin.iconInset ?? "inset-0"}`}>
-              <Image
-                src={coin.icon}
-                alt=""
-                fill
-                sizes="70px"
-                className="object-contain"
-              />
-            </div>
-          )}
+          <div className={`absolute ${coin.iconInset ?? "inset-0"}`}>
+            <Image
+              src={coin.icon}
+              alt=""
+              fill
+              sizes="70px"
+              className="object-contain"
+            />
+          </div>
         </div>
-      ))}
+      ) : (
+        <div className={`absolute ${coin.iconInset ?? "inset-0"}`}>
+          <Image
+            src={coin.icon}
+            alt=""
+            fill
+            sizes="70px"
+            className="object-contain"
+          />
+        </div>
+      )}
     </div>
+  ))}
+</div>
   );
 }
